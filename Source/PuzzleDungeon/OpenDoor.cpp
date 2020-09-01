@@ -28,10 +28,13 @@ void UOpenDoor::BeginPlay()
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
+	// define to starting rotation of the door
 	float CurrentYaw = GetOwner()->GetActorRotation().Yaw;
+	// set the axis and the value the door is to rotate along
 	FRotator OpenDoor(0.f, TargetYaw, 0.f);
-	OpenDoor.Yaw = FMath::Lerp(CurrentYaw, TargetYaw, .02f);
+	// set the speed at which the door opens using interpolation
+	OpenDoor.Yaw = FMath::FInterpTo(CurrentYaw, TargetYaw, DeltaTime, 2);
+	// target the door then set the rotation to the function we created
 	GetOwner()->SetActorRotation(OpenDoor);
 }
 
