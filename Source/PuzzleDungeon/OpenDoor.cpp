@@ -26,6 +26,9 @@ void UOpenDoor::BeginPlay()
 	// This is whatever the starting yaw is + whatever amount opens the door
 	TargetYaw = InitialYaw + 90.f;
 	
+	if (!DoorTrigger) {
+		UE_LOG(LogTemp, Error, TEXT("%s has the door open component on it, but no trigger selected"), *GetOwner()->GetName());
+	}
 }
 
 
@@ -34,7 +37,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (DoorTrigger->IsOverlappingActor(ActorThatOpens)) {
+	if (DoorTrigger && DoorTrigger->IsOverlappingActor(ActorThatOpens)) {
 		OpenDoor(DeltaTime);
 	}
 }
