@@ -3,6 +3,7 @@
 
 #include "OpenDoor.h"
 #include "GameFramework/Actor.h"
+
 // Sets default values for this component's properties
 UOpenDoor::UOpenDoor()
 {
@@ -32,8 +33,15 @@ void UOpenDoor::BeginPlay()
 void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if (DoorTrigger->IsOverlappingActor(ActorThatOpens)) {
+		OpenDoor(DeltaTime);
+	}
+}
+
+void UOpenDoor::OpenDoor(float DeltaTime) {
 	// set the doors position to follow the linear interpolation
-	CurrentYaw = FMath::Lerp(CurrentYaw, TargetYaw, 0.02f);
+	CurrentYaw = FMath::Lerp(CurrentYaw, TargetYaw, DeltaTime * 1.0f);
 	// Get the doors ratator value
 	FRotator DoorRotation = GetOwner()->GetActorRotation();
 	// get the doors current position
@@ -41,17 +49,4 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 	// update the doors position
 	GetOwner()->SetActorRotation(DoorRotation);
 	// set actor rotation
-
-
-
-
-	// // define to starting rotation of the door
-	// float CurrentYaw = GetOwner()->GetActorRotation().Yaw;
-	// // set the axis and the value the door is to rotate along
-	// FRotator OpenDoor(0.f, TargetYaw, 0.f);
-	// // set the speed at which the door opens using interpolation
-	// OpenDoor.Yaw = FMath::FInterpTo(CurrentYaw, TargetYaw, DeltaTime, 2);
-	// // target the door then set the rotation to the function we created
-	// GetOwner()->SetActorRotation(OpenDoor);
 }
-
