@@ -1,6 +1,7 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-
+#include "Engine/World.h"
+#include "GameFramework/PlayerController.h"
 #include "OpenDoor.h"
 #include "GameFramework/Actor.h"
 
@@ -21,6 +22,7 @@ void UOpenDoor::BeginPlay()
 	Super::BeginPlay();
 	// whatever the yaw is of the door at the start of the game
 	InitialYaw = GetOwner()->GetActorRotation().Yaw;
+	ClosedYaw = InitialYaw;
 	// ???
 	CurrentYaw = InitialYaw;
 	// This is whatever the starting yaw is + whatever amount opens the door
@@ -29,6 +31,8 @@ void UOpenDoor::BeginPlay()
 	if (!DoorTrigger) {
 		UE_LOG(LogTemp, Error, TEXT("%s has the door open component on it, but no trigger selected"), *GetOwner()->GetName());
 	}
+
+	ActorThatOpens = GetWorld()->GetFirstPlayerController()->GetPawn();
 }
 
 
@@ -39,6 +43,8 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 
 	if (DoorTrigger && DoorTrigger->IsOverlappingActor(ActorThatOpens)) {
 		OpenDoor(DeltaTime);
+	} else {
+		CloseDoor(DeltaTime);
 	}
 }
 
@@ -52,4 +58,12 @@ void UOpenDoor::OpenDoor(float DeltaTime) {
 	// update the doors position
 	GetOwner()->SetActorRotation(DoorRotation);
 	// set actor rotation
+}
+
+void UOpenDoor::CloseDoor(float DeltaTime) {
+
+	CurrentYaw = FMath::Lerp(CurrentYaw, InitialYaw, DeltaTime * 1.0f);
+	FRotator DoorRotation = GetOwner()->GetActorRotation();
+	DoorRotation.Yaw = CurrentYaw;
+	GetOwner()->SetActorRotation(DoorRotation);
 }
